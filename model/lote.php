@@ -3,7 +3,7 @@ class Lote
 {
 
     private $pdo;
-        
+
     public $IdLote;
     public $Nombre;
     public $AreaL;
@@ -14,7 +14,7 @@ class Lote
 	{
 		try
 		{
-			$this->pdo = Database::StartUp();     
+			$this->pdo = Database::StartUp();
 		}
 		catch(Exception $e)
 		{
@@ -41,15 +41,15 @@ class Lote
 
 	public function Obtener($IdLote)
 	{
-		try 
+		try
 		{
 			$stm = $this->pdo
 			          ->prepare("SELECT * FROM selo09 WHERE IdLote = ?");
-			          
+
 
 			$stm->execute(array($IdLote));
 			return $stm->fetch(PDO::FETCH_OBJ);
-		} catch (Exception $e) 
+		} catch (Exception $e)
 		{
 			die($e->getMessage());
 		}
@@ -57,13 +57,13 @@ class Lote
 
 	public function Eliminar($IdLote)
 	{
-		try 
+		try
 		{
 			$stm = $this->pdo
-			            ->prepare("DELETE FROM selo09 WHERE IdLote = ?");			          
+			            ->prepare("CALL EliminarLote(?)");// ? -> equivale a un parametro osea el EliminarLote(?) recibe un parametro osea el id ejemplo
 
 			$stm->execute(array($IdLote));
-		} catch (Exception $e) 
+		} catch (Exception $e)
 		{
 			die($e->getMessage());
 		}
@@ -71,26 +71,21 @@ class Lote
 
 	public function Actualizar($data)
 	{
-		try 
+		try
 		{
-			$sql = "UPDATE selo09 SET 
-						Nombre       = ?, 
-						AreaL        = ?,
-						Estado       = ?, 
-						Produccion   = ?
-				    WHERE IdLote     = ?";
+			$sql = "CALL EditarLote(?,?,?,?,?)";// en este caso recibe 5 parametros
 
 			$this->pdo->prepare($sql)
 			     ->execute(
 				    array(
-                        $data->Nombre, 
-                        $data->AreaL,
+                        $data->Nombre, // El orden en este array es importante xq si el procedimiento almacenado recibe primero el nombre y pones el apellido
+                        $data->AreaL,  // va a tomar ese apellido como nombre
                         $data->Estado,
                         $data->Produccion,
                         $data->IdLote
 					)
 				);
-		} catch (Exception $e) 
+		} catch (Exception $e)
 		{
 			die($e->getMessage());
 		}
@@ -98,21 +93,21 @@ class Lote
 
 	public function Registrar(Lote $data)
 	{
-		try 
+		try
 		{
-		$sql = "INSERT INTO selo09 (Nombre,AreaL,Estado,Produccion) 
+		$sql = "INSERT INTO selo09 (Nombre,AreaL,Estado,Produccion)
 		        VALUES (?, ?, ?, ?)";
 
 		$this->pdo->prepare($sql)
 		     ->execute(
 				array(
-                    $data->Nombre, 
-                    $data->AreaL, 
+                    $data->Nombre,
+                    $data->AreaL,
                     $data->Estado,
                     $data->Produccion
                 )
 			);
-		} catch (Exception $e) 
+		} catch (Exception $e)
 		{
 			die($e->getMessage());
 		}
